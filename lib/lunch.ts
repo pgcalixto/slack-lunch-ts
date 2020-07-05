@@ -7,31 +7,20 @@ const now = new Date();
 // TODO: internationalize messages
 const channel = "#canal-pessoal-calixto";
 const lunchMessage = "vou almoçar! 🍛";
+
 const finishLunchMessage = "voltei do almoço";
-const finishLunchMessageDateEpoch = getEpoch(
-  now,
-  config.finishLunchDurationISO
-);
-const finishLunchMessageDateTimeout = getMilliseconds(
-  config.finishLunchDurationISO
-);
+const finishLunchDate = getEpoch(now, config.finishLunchDurationISO);
+const finishLunchTimeout = getMilliseconds(config.finishLunchDurationISO);
 
 // TODO: change "message" to "reminder"
 const resumeWorkMessage = "voltar a trabalhar!";
-const resumeWorkMessageDateEpoch = getEpoch(
-  now,
-  config.resumeWorkReminderDurationISO
-);
+const resumeWorkDate = getEpoch(now,config.resumeWorkReminderDurationISO);
 const resumeWorkMessageDeleteTimeout = getMilliseconds(
   config.resumeWorkReminderDeleteDurationISO
 );
 
 const lunchStatusMessage = "almoçando";
 const lunchStatusEmoji = "🍛";
-const lunchStatusExpirationDateEpoch = getEpoch(
-  now,
-  config.finishLunchDurationISO
-);
 
 interface AddReminderResponse extends WebAPICallResult {
   ok: boolean,
@@ -124,20 +113,15 @@ async function beginLunch() {
     slackWebClient,
     lunchStatusMessage,
     lunchStatusEmoji,
-    lunchStatusExpirationDateEpoch
+    finishLunchDate
   );
 
-  scheduleMessage(
-    slackWebClient,
-    channel,
-    finishLunchMessage,
-    finishLunchMessageDateEpoch
-  );
+  scheduleMessage(slackWebClient, channel, finishLunchMessage, finishLunchDate);
 
   const resumeWorkReminderResponse: AddReminderResponse = await addReminder(
     slackWebClient,
     resumeWorkMessage,
-    resumeWorkMessageDateEpoch
+    resumeWorkDate
   ) as AddReminderResponse;
 
   const resumeWorkReminderId = resumeWorkReminderResponse.reminder.id;
@@ -148,7 +132,7 @@ async function beginLunch() {
 
   setTimeout(() => {
     isLunching = false
-  }, finishLunchMessageDateTimeout);
+  }, finishLunchTimeout);
 }
 
 export {

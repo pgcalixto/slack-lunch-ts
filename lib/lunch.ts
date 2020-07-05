@@ -12,10 +12,9 @@ const finishLunchMessage = "voltei do almoço";
 const finishLunchDate = getEpoch(now, config.finishLunchDurationISO);
 const finishLunchTimeout = getMilliseconds(config.finishLunchDurationISO);
 
-// TODO: change "message" to "reminder"
-const resumeWorkMessage = "voltar a trabalhar!";
-const resumeWorkDate = getEpoch(now,config.resumeWorkReminderDurationISO);
-const resumeWorkMessageDeleteTimeout = getMilliseconds(
+const resumeWorkReminderMessage = "voltar a trabalhar!";
+const resumeWorkReminderDate = getEpoch(now,config.resumeWorkReminderDurationISO);
+const resumeWorkReminderDeleteTimeout = getMilliseconds(
   config.resumeWorkReminderDeleteDurationISO
 );
 
@@ -120,15 +119,15 @@ async function beginLunch() {
 
   const resumeWorkReminderResponse = await addReminder(
     slackWebClient,
-    resumeWorkMessage,
-    resumeWorkDate
+    resumeWorkReminderMessage,
+    resumeWorkReminderDate
   ) as AddReminderResponse;
 
   const resumeWorkReminderId = resumeWorkReminderResponse.reminder.id;
 
   setTimeout(() => {
     deleteReminder(slackWebClient, resumeWorkReminderId);
-  }, resumeWorkMessageDeleteTimeout);
+  }, resumeWorkReminderDeleteTimeout);
 
   setTimeout(() => {
     isLunching = false;

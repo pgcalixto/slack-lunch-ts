@@ -1,10 +1,6 @@
 import { WebClient, WebAPICallResult } from "@slack/web-api";
 import { getEpoch, getMilliseconds } from "./datetime";
 
-const SECOND = 1000;
-const MINUTE = 60 * SECOND;
-const HOUR = 60 * MINUTE;
-
 const now = new Date();
 
 // TODO: internationalize messages
@@ -12,6 +8,7 @@ const channel = "#canal-pessoal-calixto";
 const lunchMessage = "vou almoçar! 🍛";
 const finishLunchMessage = "voltei do almoço";
 const finishLunchMessageDateEpoch = getEpoch(now, "PT1H");
+const finishLunchMessageDateTimeout = getMilliseconds("PT1H");
 
 // TODO: change "message" to "reminder"
 const resumeWorkMessage = "voltar a trabalhar!";
@@ -136,7 +133,7 @@ async function beginLunch() {
 
   setTimeout(() => {
     isLunching = false
-  }, 1 * HOUR); // TODO: move timeout value to constant
+  }, finishLunchMessageDateTimeout);
 }
 
 export {

@@ -131,7 +131,7 @@ async function beginLunch() {
   }, resumeWorkMessageDeleteTimeout);
 
   setTimeout(() => {
-    isLunching = false
+    isLunching = false;
   }, finishLunchTimeout);
 }
 

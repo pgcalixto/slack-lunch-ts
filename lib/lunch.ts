@@ -105,6 +105,7 @@ async function beginLunch() {
 
   sendMessage(slackWebClient, channel, lunchMessage);
 
+  // TODO: set do-not-disturb
   setStatus(
     slackWebClient,
     lunchStatusMessage,

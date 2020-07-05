@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc index.ts",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,5 +16,8 @@
     "@types/node": "^14.0.14",
     "luxon": "^1.24.1",
     "restify": "^8.5.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.6"
   }
 }

@@ -1,1 +1,1 @@
-web: tsc index.ts && node index.js
+web: npm build && npm start

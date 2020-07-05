@@ -5,7 +5,8 @@ import config from "../config";
 const now = new Date();
 
 // TODO: internationalize messages
-const channel = "#canal-pessoal-calixto";
+const token = config.slackToken;
+const channel = config.slackChannel;
 const lunchMessage = "vou almoçar! 🍛";
 
 const finishLunchMessage = "voltei do almoço";
@@ -100,8 +101,6 @@ async function beginLunch() {
 
   console.log("Start lunch.");
   isLunching = true;
-
-  const token = config.slackToken;
 
   const slackWebClient = new WebClient(token);
 

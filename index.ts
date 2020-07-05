@@ -9,10 +9,12 @@ function lunch(req, res, next) { // TODO: define types
   next();
 }
 
+const PORT = process.env.PORT || 5000;
+
 const server = restify.createServer();
 
 server.post('/lunch', lunch);
 
-server.listen(5000, function() {
+server.listen(PORT, function() {
   console.log('%s listening at %s', server.name, server.url);
 });

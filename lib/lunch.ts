@@ -1,5 +1,6 @@
 import { WebClient, WebAPICallResult } from "@slack/web-api";
 import { getEpoch, getMilliseconds } from "./datetime";
+import config from "../config";
 
 const now = new Date();
 
@@ -7,17 +8,30 @@ const now = new Date();
 const channel = "#canal-pessoal-calixto";
 const lunchMessage = "vou almoçar! 🍛";
 const finishLunchMessage = "voltei do almoço";
-const finishLunchMessageDateEpoch = getEpoch(now, "PT1H");
-const finishLunchMessageDateTimeout = getMilliseconds("PT1H");
+const finishLunchMessageDateEpoch = getEpoch(
+  now,
+  config.finishLunchDurationISO
+);
+const finishLunchMessageDateTimeout = getMilliseconds(
+  config.finishLunchDurationISO
+);
 
 // TODO: change "message" to "reminder"
 const resumeWorkMessage = "voltar a trabalhar!";
-const resumeWorkMessageDateEpoch = getEpoch(now, "PT55M");
-const resumeWorkMessageDeleteTimeout = getMilliseconds("PT1H10M");
+const resumeWorkMessageDateEpoch = getEpoch(
+  now,
+  config.resumeWorkReminderDurationISO
+);
+const resumeWorkMessageDeleteTimeout = getMilliseconds(
+  config.resumeWorkReminderDeleteDurationISO
+);
 
 const lunchStatusMessage = "almoçando";
 const lunchStatusEmoji = "🍛";
-const lunchStatusExpirationDateEpoch = getEpoch(now, "PT50M");
+const lunchStatusExpirationDateEpoch = getEpoch(
+  now,
+  config.finishLunchDurationISO
+);
 
 interface AddReminderResponse extends WebAPICallResult {
   ok: boolean,
@@ -99,7 +113,7 @@ async function beginLunch() {
   console.log("Start lunch.");
   isLunching = true;
 
-  const token = process.env.SLACK_TOKEN;
+  const token = config.slackToken;
 
   const slackWebClient = new WebClient(token);
 

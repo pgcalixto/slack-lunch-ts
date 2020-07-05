@@ -118,7 +118,7 @@ async function beginLunch() {
 
   scheduleMessage(slackWebClient, channel, finishLunchMessage, finishLunchDate);
 
-  const resumeWorkReminderResponse: AddReminderResponse = await addReminder(
+  const resumeWorkReminderResponse = await addReminder(
     slackWebClient,
     resumeWorkMessage,
     resumeWorkDate

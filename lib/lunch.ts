@@ -1,54 +1,26 @@
 import { WebClient, WebAPICallResult } from "@slack/web-api";
-const luxon = require("luxon");
+import { getEpoch, getMilliseconds } from "./datetime";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 
-const now = luxon.DateTime.utc();
+const now = new Date();
 
 // TODO: internationalize messages
 const channel = "#canal-pessoal-calixto";
 const lunchMessage = "vou almoçar! 🍛";
 const finishLunchMessage = "voltei do almoço";
-const finishLunchMessageDurationISO = "PT50M";
-const finishLunchMessageDuration = luxon.Duration.fromISO(
-  finishLunchMessageDurationISO
-);
-const finishLunchMessageDate = now.plus(finishLunchMessageDuration);
-const finishLunchMessageDateEpoch = Math.round(
-  finishLunchMessageDate.toSeconds()
-);
+const finishLunchMessageDateEpoch = getEpoch(now, "PT1H");
 
 // TODO: change "message" to "reminder"
 const resumeWorkMessage = "voltar a trabalhar!";
-const resumeWorkMessageDurationISO = "PT55M";
-const resumeWorkMessageDuration = luxon.Duration.fromISO(
-  resumeWorkMessageDurationISO
-);
-const resumeWorkMessageDate = now.plus(resumeWorkMessageDuration);
-const resumeWorkMessageDateEpoch = Math.round(
-  resumeWorkMessageDate.toSeconds()
-);
-
-const resumeWorkMessageDeleteDurationISO = "PT10M";
-const resumeWorkMessageDeleteDuration = luxon.Duration.fromISO(
-  resumeWorkMessageDeleteDurationISO
-);
-const resumeWorkMessageDeleteTimeout = resumeWorkMessageDeleteDuration.as(
-  "millisecond"
-);
+const resumeWorkMessageDateEpoch = getEpoch(now, "PT55M");
+const resumeWorkMessageDeleteTimeout = getMilliseconds("PT1H10M");
 
 const lunchStatusMessage = "almoçando";
 const lunchStatusEmoji = "🍛";
-const lunchStatusExpirationDurationISO = "PT50M";
-const lunchStatusExpirationDuration = luxon.Duration.fromISO(
-  lunchStatusExpirationDurationISO
-);
-const lunchStatusExpirationDate = now.plus(lunchStatusExpirationDuration);
-const lunchStatusExpirationDateEpoch = Math.round(
-  lunchStatusExpirationDate.toSeconds()
-);
+const lunchStatusExpirationDateEpoch = getEpoch(now, "PT50M");
 
 interface AddReminderResponse extends WebAPICallResult {
   ok: boolean,

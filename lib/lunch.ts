@@ -14,7 +14,10 @@ const finishLunchDate = getEpoch(now, config.finishLunchDurationISO);
 const finishLunchTimeout = getMilliseconds(config.finishLunchDurationISO);
 
 const resumeWorkReminderMessage = "voltar a trabalhar!";
-const resumeWorkReminderDate = getEpoch(now,config.resumeWorkReminderDurationISO);
+const resumeWorkReminderDate = getEpoch(
+  now,
+  config.resumeWorkReminderDurationISO
+);
 const resumeWorkReminderDeleteTimeout = getMilliseconds(
   config.resumeWorkReminderDeleteDurationISO
 );
@@ -23,16 +26,16 @@ const lunchStatusMessage = "almoçando";
 const lunchStatusEmoji = "🍛";
 
 interface AddReminderResponse extends WebAPICallResult {
-  ok: boolean,
+  ok: boolean;
   reminder: {
-    id: string,
-    creator?: string,
-    user?: string,
-    text?: string,
-    recurring?: boolean,
-    time?: number,
-    complete_ts?: number
-  }
+    id: string;
+    creator?: string;
+    user?: string;
+    text?: string;
+    recurring?: boolean;
+    time?: number;
+    complete_ts?: number;
+  };
 }
 
 async function addReminder(
@@ -116,11 +119,11 @@ async function beginLunch() {
 
   scheduleMessage(slackWebClient, channel, finishLunchMessage, finishLunchDate);
 
-  const resumeWorkReminderResponse = await addReminder(
+  const resumeWorkReminderResponse = (await addReminder(
     slackWebClient,
     resumeWorkReminderMessage,
     resumeWorkReminderDate
-  ) as AddReminderResponse;
+  )) as AddReminderResponse;
 
   const resumeWorkReminderId = resumeWorkReminderResponse.reminder.id;
 
@@ -133,6 +136,4 @@ async function beginLunch() {
   }, finishLunchTimeout);
 }
 
-export {
-  beginLunch
-};
+export { beginLunch };

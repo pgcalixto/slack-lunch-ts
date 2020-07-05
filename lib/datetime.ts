@@ -20,7 +20,4 @@ function getMilliseconds(durationISO: string) {
   return milliseconds;
 }
 
-export {
-  getEpoch,
-  getMilliseconds
-};
+export { getEpoch, getMilliseconds };

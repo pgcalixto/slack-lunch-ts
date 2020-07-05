@@ -1,28 +1,53 @@
 import { WebClient, WebAPICallResult } from "@slack/web-api";
+const luxon = require("luxon");
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 
+const now = luxon.DateTime.utc();
+
 // TODO: internationalize messages
 const channel = "#canal-pessoal-calixto";
 const lunchMessage = "vou almoçar! 🍛";
 const finishLunchMessage = "voltei do almoço";
-const finishLunchMessageDate = Math.round(
-  (new Date().getTime() + 1 * HOUR) / 1000
+const finishLunchMessageDurationISO = "PT50M";
+const finishLunchMessageDuration = luxon.Duration.fromISO(
+  finishLunchMessageDurationISO
+);
+const finishLunchMessageDate = now.plus(finishLunchMessageDuration);
+const finishLunchMessageDateEpoch = Math.round(
+  finishLunchMessageDate.toSeconds()
 );
 
+// TODO: change "message" to "reminder"
 const resumeWorkMessage = "voltar a trabalhar!";
-const resumeWorkMessageDate = Math.round(
-  (new Date().getTime() + 1 * HOUR - 5 * MINUTE) / 1000
+const resumeWorkMessageDurationISO = "PT55M";
+const resumeWorkMessageDuration = luxon.Duration.fromISO(
+  resumeWorkMessageDurationISO
 );
-const resumeWorkMessageDeleteTimeout =
-  finishLunchMessageDate * 1000 - new Date().getTime() + 10 * MINUTE;
+const resumeWorkMessageDate = now.plus(resumeWorkMessageDuration);
+const resumeWorkMessageDateEpoch = Math.round(
+  resumeWorkMessageDate.toSeconds()
+);
+
+const resumeWorkMessageDeleteDurationISO = "PT10M";
+const resumeWorkMessageDeleteDuration = luxon.Duration.fromISO(
+  resumeWorkMessageDeleteDurationISO
+);
+const resumeWorkMessageDeleteTimeout = resumeWorkMessageDeleteDuration.as(
+  "millisecond"
+);
 
 const lunchStatusMessage = "almoçando";
 const lunchStatusEmoji = "🍛";
-const lunchStatusExpirationDate = Math.round(
-  (new Date().getTime() + 1 * HOUR - 10 * MINUTE) / 1000
+const lunchStatusExpirationDurationISO = "PT50M";
+const lunchStatusExpirationDuration = luxon.Duration.fromISO(
+  lunchStatusExpirationDurationISO
+);
+const lunchStatusExpirationDate = now.plus(lunchStatusExpirationDuration);
+const lunchStatusExpirationDateEpoch = Math.round(
+  lunchStatusExpirationDate.toSeconds()
 );
 
 interface AddReminderResponse extends WebAPICallResult {
@@ -115,20 +140,20 @@ async function beginLunch() {
     slackWebClient,
     lunchStatusMessage,
     lunchStatusEmoji,
-    lunchStatusExpirationDate
+    lunchStatusExpirationDateEpoch
   );
 
   scheduleMessage(
     slackWebClient,
     channel,
     finishLunchMessage,
-    finishLunchMessageDate
+    finishLunchMessageDateEpoch
   );
 
   const resumeWorkReminderResponse: AddReminderResponse = await addReminder(
     slackWebClient,
     resumeWorkMessage,
-    resumeWorkMessageDate
+    resumeWorkMessageDateEpoch
   ) as AddReminderResponse;
 
   const resumeWorkReminderId = resumeWorkReminderResponse.reminder.id;

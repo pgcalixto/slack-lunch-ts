@@ -1,5 +1,6 @@
 import { WebClient, WebAPICallResult } from "@slack/web-api";
 import { getEpoch, getMilliseconds } from "./datetime";
+import { logEpoch, logTimeout } from "./logger";
 import config from "../config";
 
 const now = new Date();
@@ -24,6 +25,14 @@ const resumeWorkReminderDeleteTimeout = getMilliseconds(
 
 const lunchStatusMessage = "almoçando";
 const lunchStatusEmoji = "🍛";
+
+logEpoch(resumeWorkReminderDate, "resume work reminder date");
+logEpoch(finishLunchDate, "finish lunch date");
+logTimeout(finishLunchTimeout, "finish lunch timeout");
+logTimeout(
+  resumeWorkReminderDeleteTimeout,
+  "resume work reminder delete timeout"
+);
 
 interface AddReminderResponse extends WebAPICallResult {
   ok: boolean;

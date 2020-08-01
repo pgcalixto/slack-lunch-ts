@@ -1,4 +1,4 @@
-const luxon = require("luxon");
+import * as luxon from "luxon";
 
 function getEpoch(startDate: Date, durationISO: string) {
   const luxonStartDate = luxon.DateTime.fromJSDate(startDate);

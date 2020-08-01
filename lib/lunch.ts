@@ -1,5 +1,5 @@
 import { WebClient, WebAPICallResult } from "@slack/web-api";
-import { getEpoch, getMilliseconds } from "./datetime";
+import { getEpochByNow, getMilliseconds } from "./datetime";
 import { logEpoch, logTimeout } from "./logger";
 import config from "../config";
 
@@ -98,11 +98,8 @@ async function beginLunch() {
   console.log("Start lunch.");
   isLunching = true;
 
-  const now = new Date();
-
-  const finishLunchDate = getEpoch(now, config.finishLunchDurationISO);
-  const resumeWorkReminderDate = getEpoch(
-    now,
+  const finishLunchDate = getEpochByNow(config.finishLunchDurationISO);
+  const resumeWorkReminderDate = getEpochByNow(
     config.resumeWorkReminderDurationISO
   );
 

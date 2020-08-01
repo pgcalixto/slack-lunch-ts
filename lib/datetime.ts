@@ -1,7 +1,7 @@
 import * as luxon from "luxon";
 
-function getEpoch(startDate: Date, durationISO: string) {
-  const luxonStartDate = luxon.DateTime.fromJSDate(startDate);
+function getEpochByNow(durationISO: string) {
+  const luxonStartDate = luxon.DateTime.utc();
 
   const luxonDuration = luxon.Duration.fromISO(durationISO);
 
@@ -45,7 +45,7 @@ function getRFC2822FromEpoch(epoch: number) {
 }
 
 export {
-  getEpoch,
+  getEpochByNow,
   getMilliseconds,
   getRFC2822ByNowFromMillis,
   getRFC2822FromEpoch

@@ -3,35 +3,19 @@ import { getEpoch, getMilliseconds } from "./datetime";
 import { logEpoch, logTimeout } from "./logger";
 import config from "../config";
 
-const now = new Date();
-
 // TODO: internationalize messages
 const token = config.slackToken;
 const channel = config.slackChannel;
+
 const lunchMessage = "vou almoçar! 🍛";
-
 const finishLunchMessage = "voltei do almoço";
-const finishLunchDate = getEpoch(now, config.finishLunchDurationISO);
-const finishLunchTimeout = getMilliseconds(config.finishLunchDurationISO);
-
 const resumeWorkReminderMessage = "voltar a trabalhar!";
-const resumeWorkReminderDate = getEpoch(
-  now,
-  config.resumeWorkReminderDurationISO
-);
-const resumeWorkReminderDeleteTimeout = getMilliseconds(
-  config.resumeWorkReminderDeleteDurationISO
-);
-
 const lunchStatusMessage = "almoçando";
 const lunchStatusEmoji = "🍛";
 
-logEpoch(resumeWorkReminderDate, "resume work reminder date");
-logEpoch(finishLunchDate, "finish lunch date");
-logTimeout(finishLunchTimeout, "finish lunch timeout");
-logTimeout(
-  resumeWorkReminderDeleteTimeout,
-  "resume work reminder delete timeout"
+const finishLunchTimeout = getMilliseconds(config.finishLunchDurationISO);
+const resumeWorkReminderDeleteTimeout = getMilliseconds(
+  config.resumeWorkReminderDeleteDurationISO
 );
 
 interface AddReminderResponse extends WebAPICallResult {
@@ -113,6 +97,22 @@ async function beginLunch() {
 
   console.log("Start lunch.");
   isLunching = true;
+
+  const now = new Date();
+
+  const finishLunchDate = getEpoch(now, config.finishLunchDurationISO);
+  const resumeWorkReminderDate = getEpoch(
+    now,
+    config.resumeWorkReminderDurationISO
+  );
+
+  logEpoch(resumeWorkReminderDate, "resume work reminder date");
+  logEpoch(finishLunchDate, "finish lunch date");
+  logTimeout(finishLunchTimeout, "finish lunch timeout");
+  logTimeout(
+    resumeWorkReminderDeleteTimeout,
+    "resume work reminder delete timeout"
+  );
 
   const slackWebClient = new WebClient(token);
 

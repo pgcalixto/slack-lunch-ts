@@ -113,17 +113,28 @@ async function beginLunch() {
 
   const slackWebClient = new WebClient(token);
 
-  sendMessage(slackWebClient, channel, lunchMessage);
+  const sendMessagePromise = sendMessage(slackWebClient, channel, lunchMessage);
 
   // TODO: set do-not-disturb
-  setStatus(
+  const setStatusPromise = setStatus(
     slackWebClient,
     lunchStatusMessage,
     lunchStatusEmoji,
     finishLunchDate
   );
 
-  scheduleMessage(slackWebClient, channel, finishLunchMessage, finishLunchDate);
+  const scheduleMessagePromise = scheduleMessage(
+    slackWebClient,
+    channel,
+    finishLunchMessage,
+    finishLunchDate
+  );
+
+  await Promise.all([
+    sendMessagePromise,
+    setStatusPromise,
+    scheduleMessagePromise
+  ]);
 
   const resumeWorkReminderResponse = (await addReminder(
     slackWebClient,

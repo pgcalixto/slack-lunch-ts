@@ -1,5 +1,6 @@
 import * as restify from "restify";
 import * as errs from "restify-errors";
+import { logger } from "./lib/logger";
 import { beginLunch } from "./lib/lunch";
 
 async function lunch(
@@ -14,7 +15,7 @@ async function lunch(
 
     return next();
   } catch (err) {
-    console.log(`Error: ${err}`);
+    logger.error(err);
 
     return next(new errs.InternalServerError("lunch failed!"));
   }

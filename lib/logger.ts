@@ -29,4 +29,4 @@ function logTimeout(timeoutMillis: number, timeoutName: string) {
   logger.info(`${rfc2822String} - ${timeoutName}`);
 }
 
-export { logEpoch, logTimeout };
+export { logger, logEpoch, logTimeout };

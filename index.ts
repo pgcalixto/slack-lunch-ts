@@ -1,13 +1,19 @@
-import * as restify from "restify"; // TODO: include @types/restify
+import * as restify from "restify";
+import * as errs from "restify-errors";
 import { beginLunch } from "./lib/lunch";
 
 async function lunch(req, res, next) { // TODO: define types
-  // TODO: try-catch
-  await beginLunch();
+  try {
+    await beginLunch();
 
-  res.send('ok!');
+    res.send("ok!");
 
-  next();
+    return next();
+  } catch (err) {
+    console.log(`Error: ${err}`);
+
+    return next(new errs.InternalServerError("lunch failed!"));
+  }
 }
 
 const PORT = process.env.PORT || 5000;

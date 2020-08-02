@@ -2,8 +2,11 @@ import * as restify from "restify";
 import * as errs from "restify-errors";
 import { beginLunch } from "./lib/lunch";
 
-// TODO: define argument types
-async function lunch(req, res, next) {
+async function lunch(
+  req: restify.Request,
+  res: restify.Response,
+  next: restify.Next
+) {
   try {
     await beginLunch();
 

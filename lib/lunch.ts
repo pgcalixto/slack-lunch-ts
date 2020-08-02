@@ -1,6 +1,6 @@
 import { WebClient, WebAPICallResult } from "@slack/web-api";
-import { getEpochByNow, getMilliseconds } from "./datetime";
-import { logEpoch, logTimeout } from "./logger";
+import { getEpochByNow, getMilliseconds, getMinutes } from "./datetime";
+import { logEpoch, logMinutes, logTimeout } from "./logger";
 import config from "../config";
 
 // TODO: internationalize messages
@@ -14,6 +14,7 @@ const lunchStatusMessage = "almoçando";
 const lunchStatusEmoji = "🍛";
 
 const finishLunchTimeout = getMilliseconds(config.finishLunchDurationISO);
+const finishDoNotDisturbMinutes = getMinutes(config.finishDoNotDisturbISO);
 const resumeWorkReminderDeleteTimeout = getMilliseconds(
   config.resumeWorkReminderDeleteDurationISO
 );
@@ -55,6 +56,10 @@ async function sendMessage(
     channel: channel,
     text: message
   });
+}
+
+async function setDoNotDisturb(slackWebClient: WebClient, minutes: number) {
+  return slackWebClient.dnd.setSnooze({ num_minutes: minutes });
 }
 
 async function scheduleMessage(
@@ -103,6 +108,7 @@ async function beginLunch() {
     config.resumeWorkReminderDurationISO
   );
 
+  logMinutes(finishDoNotDisturbMinutes, "finish do not disturb minutes");
   logEpoch(resumeWorkReminderDate, "resume work reminder date");
   logEpoch(finishLunchDate, "finish lunch date");
   logTimeout(finishLunchTimeout, "finish lunch timeout");
@@ -115,12 +121,16 @@ async function beginLunch() {
 
   const sendMessagePromise = sendMessage(slackWebClient, channel, lunchMessage);
 
-  // TODO: set do-not-disturb
   const setStatusPromise = setStatus(
     slackWebClient,
     lunchStatusMessage,
     lunchStatusEmoji,
     finishLunchDate
+  );
+
+  const setDoNotDisturbPromise = setDoNotDisturb(
+    slackWebClient,
+    finishDoNotDisturbMinutes
   );
 
   const scheduleMessagePromise = scheduleMessage(
@@ -133,6 +143,7 @@ async function beginLunch() {
   await Promise.all([
     sendMessagePromise,
     setStatusPromise,
+    setDoNotDisturbPromise,
     scheduleMessagePromise
   ]);
 

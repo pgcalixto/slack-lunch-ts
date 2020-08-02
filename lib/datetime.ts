@@ -22,6 +22,14 @@ function getMilliseconds(durationISO: string) {
   return milliseconds;
 }
 
+function getMinutes(durationISO: string) {
+  const duration = luxon.Duration.fromISO(durationISO);
+
+  const minutes = Math.round(duration.as("minutes"));
+
+  return minutes;
+}
+
 function getRFC2822ByNowFromMillis(millis: number) {
   const duration = luxon.Duration.fromMillis(millis);
 
@@ -49,6 +57,7 @@ function getRFC2822FromEpoch(epoch: number) {
 export {
   getEpochByNow,
   getMilliseconds,
+  getMinutes,
   getRFC2822ByNowFromMillis,
   getRFC2822FromEpoch
 };

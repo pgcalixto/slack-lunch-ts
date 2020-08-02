@@ -1,4 +1,5 @@
 interface ProcessEnv extends NodeJS.ProcessEnv {
+  FINISH_DO_NOT_DISTURB_ISO: string;
   FINISH_LUNCH_DURATION_ISO: string;
   RESUME_WORK_REMINDER_DURATION_ISO: string;
   RESUME_WORK_REMINDER_DELETE_DURATION_ISO: string;
@@ -7,6 +8,7 @@ interface ProcessEnv extends NodeJS.ProcessEnv {
 }
 
 const {
+  FINISH_DO_NOT_DISTURB_ISO: finishDoNotDisturbISO,
   FINISH_LUNCH_DURATION_ISO: finishLunchDurationISO,
   RESUME_WORK_REMINDER_DURATION_ISO: resumeWorkReminderDurationISO,
   RESUME_WORK_REMINDER_DELETE_DURATION_ISO: resumeWorkReminderDeleteDurationISO,
@@ -15,6 +17,7 @@ const {
 } = process.env as ProcessEnv;
 
 export default {
+  finishDoNotDisturbISO,
   finishLunchDurationISO,
   resumeWorkReminderDurationISO,
   resumeWorkReminderDeleteDurationISO,

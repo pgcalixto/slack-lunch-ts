@@ -23,10 +23,18 @@ function logEpoch(epoch: number, epochName: string) {
   logger.info(`${rfc2822String} - ${epochName}`);
 }
 
+function logMinutes(minutes: number, eventName: string) {
+  const millis = minutes * 60 * 1000;
+
+  const rfc2822String = getRFC2822ByNowFromMillis(millis);
+
+  logger.info(`${rfc2822String} - ${eventName}`);
+}
+
 function logTimeout(timeoutMillis: number, timeoutName: string) {
   const rfc2822String = getRFC2822ByNowFromMillis(timeoutMillis);
 
   logger.info(`${rfc2822String} - ${timeoutName}`);
 }
 
-export { logger, logEpoch, logTimeout };
+export { logger, logEpoch, logMinutes, logTimeout };

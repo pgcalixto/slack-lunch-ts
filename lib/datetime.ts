@@ -1,5 +1,7 @@
 import * as luxon from "luxon";
 
+luxon.Settings.throwOnInvalid = true;
+
 function getEpochByNow(durationISO: string) {
   const luxonStartDate = luxon.DateTime.utc();
 

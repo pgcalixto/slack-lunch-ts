@@ -155,6 +155,7 @@ async function beginLunch() {
 
   const resumeWorkReminderId = resumeWorkReminderResponse.reminder.id;
 
+  // TODO: this is not being triggered due to the Heroku's idling state
   setTimeout(() => {
     deleteReminder(slackWebClient, resumeWorkReminderId);
   }, resumeWorkReminderDeleteTimeout);

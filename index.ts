@@ -2,6 +2,7 @@ import * as restify from "restify"; // TODO: include @types/restify
 import { beginLunch } from "./lib/lunch";
 
 async function lunch(req, res, next) { // TODO: define types
+  // TODO: try-catch
   await beginLunch();
 
   res.send('ok!');

@@ -2,24 +2,24 @@ import * as luxon from "luxon";
 
 luxon.Settings.throwOnInvalid = true;
 
-function getEpochByNow(durationISO: string) {
-  const luxonStartDate = luxon.DateTime.utc();
+function _getLuxonEndDate(startDate: Date, durationISO: string) {
+  const luxonStartDate = luxon.DateTime.fromJSDate(startDate);
 
   const luxonDuration = luxon.Duration.fromISO(durationISO);
 
   const luxonDate = luxonStartDate.plus(luxonDuration);
 
-  const dateEpoch = Math.round(luxonDate.toSeconds());
-
-  return dateEpoch;
+  return luxonDate;
 }
 
-function getMilliseconds(durationISO: string) {
-  const duration = luxon.Duration.fromISO(durationISO);
+function getDateByDuration(startDate: Date, durationISO: string) {
+  const luxonDate = _getLuxonEndDate(startDate, durationISO);
 
-  const milliseconds = Math.round(duration.as("milliseconds"));
+  const date = luxonDate.toJSDate();
 
-  return milliseconds;
+  const epoch = Math.round(luxonDate.toSeconds());
+
+  return { date, epoch };
 }
 
 function getMinutes(durationISO: string) {
@@ -55,8 +55,7 @@ function getRFC2822FromEpoch(epoch: number) {
 }
 
 export {
-  getEpochByNow,
-  getMilliseconds,
+  getDateByDuration,
   getMinutes,
   getRFC2822ByNowFromMillis,
   getRFC2822FromEpoch

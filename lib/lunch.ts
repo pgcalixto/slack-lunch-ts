@@ -1,7 +1,8 @@
 import { WebClient, WebAPICallResult } from "@slack/web-api";
-import { getEpochByNow, getMilliseconds, getMinutes } from "./datetime";
-import { logEpoch, logMinutes, logTimeout } from "./logger";
+import { getDateByDuration, getMinutes } from "./datetime";
+import { logEpoch, logMinutes } from "./logger";
 import config from "../config";
+import database from "./database";
 
 // TODO: internationalize messages
 const token = config.slackToken;
@@ -13,11 +14,7 @@ const resumeWorkReminderMessage = "voltar a trabalhar!";
 const lunchStatusMessage = "almoçando";
 const lunchStatusEmoji = "🍛";
 
-const finishLunchTimeout = getMilliseconds(config.finishLunchDurationISO);
 const finishDoNotDisturbMinutes = getMinutes(config.finishDoNotDisturbISO);
-const resumeWorkReminderDeleteTimeout = getMilliseconds(
-  config.resumeWorkReminderDeleteDurationISO
-);
 
 interface AddReminderResponse extends WebAPICallResult {
   ok: boolean;
@@ -75,6 +72,12 @@ async function scheduleMessage(
   });
 }
 
+async function getIsLunching(startDate: Date) {
+  const lunches = await database.getLunchByStartDate(startDate);
+
+  return lunches.length > 0;
+}
+
 async function setStatus(
   slackWebClient: WebClient,
   text: string,
@@ -92,30 +95,32 @@ async function setStatus(
   });
 }
 
-let isLunching = false;
-
 async function beginLunch() {
+  const startLunchDate = new Date();
+
+  const isLunching = await getIsLunching(startLunchDate);
+
   if (isLunching) {
     console.log("I am already lunching.");
     return;
   }
 
   console.log("Start lunch.");
-  isLunching = true;
 
-  const finishLunchDate = getEpochByNow(config.finishLunchDurationISO);
-  const resumeWorkReminderDate = getEpochByNow(
-    config.resumeWorkReminderDurationISO
+  const { date: finishLunchDate, epoch: finishLunchEpoch } = getDateByDuration(
+    startLunchDate,
+    config.finishLunchDurationISO
   );
+  const {
+    date: resumeWorkReminderDate,
+    epoch: resumeWorkReminderEpoch
+  } = getDateByDuration(startLunchDate, config.resumeWorkReminderDurationISO);
+
+  const lunchId = await database.saveLunch(startLunchDate, finishLunchDate);
 
   logMinutes(finishDoNotDisturbMinutes, "finish do not disturb minutes");
-  logEpoch(resumeWorkReminderDate, "resume work reminder date");
-  logEpoch(finishLunchDate, "finish lunch date");
-  logTimeout(finishLunchTimeout, "finish lunch timeout");
-  logTimeout(
-    resumeWorkReminderDeleteTimeout,
-    "resume work reminder delete timeout"
-  );
+  logEpoch(resumeWorkReminderEpoch, "resume work reminder date");
+  logEpoch(finishLunchEpoch, "finish lunch date");
 
   const slackWebClient = new WebClient(token);
 
@@ -125,7 +130,7 @@ async function beginLunch() {
     slackWebClient,
     lunchStatusMessage,
     lunchStatusEmoji,
-    finishLunchDate
+    finishLunchEpoch
   );
 
   const setDoNotDisturbPromise = setDoNotDisturb(
@@ -137,7 +142,7 @@ async function beginLunch() {
     slackWebClient,
     channel,
     finishLunchMessage,
-    finishLunchDate
+    finishLunchEpoch
   );
 
   await Promise.all([
@@ -150,19 +155,16 @@ async function beginLunch() {
   const resumeWorkReminderResponse = (await addReminder(
     slackWebClient,
     resumeWorkReminderMessage,
-    resumeWorkReminderDate
+    resumeWorkReminderEpoch
   )) as AddReminderResponse;
 
   const resumeWorkReminderId = resumeWorkReminderResponse.reminder.id;
 
-  // TODO: this is not being triggered due to the Heroku's idling state
-  setTimeout(() => {
-    deleteReminder(slackWebClient, resumeWorkReminderId);
-  }, resumeWorkReminderDeleteTimeout);
-
-  setTimeout(() => {
-    isLunching = false;
-  }, finishLunchTimeout);
+  await database.saveLunchReminder(
+    lunchId,
+    resumeWorkReminderId,
+    resumeWorkReminderDate
+  );
 }
 
 export { beginLunch };

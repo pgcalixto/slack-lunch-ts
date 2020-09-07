@@ -31,10 +31,4 @@ function logMinutes(minutes: number, eventName: string) {
   logger.info(`${rfc2822String} - ${eventName}`);
 }
 
-function logTimeout(timeoutMillis: number, timeoutName: string) {
-  const rfc2822String = getRFC2822ByNowFromMillis(timeoutMillis);
-
-  logger.info(`${rfc2822String} - ${timeoutName}`);
-}
-
-export { logger, logEpoch, logMinutes, logTimeout };
+export { logger, logEpoch, logMinutes };

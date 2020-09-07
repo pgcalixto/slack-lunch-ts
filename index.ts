@@ -2,6 +2,7 @@ import * as restify from "restify";
 import * as errs from "restify-errors";
 import { logger } from "./lib/logger";
 import { beginLunch } from "./lib/lunch";
+import database from "./lib/database";
 
 async function lunch(
   req: restify.Request,
@@ -23,10 +24,20 @@ async function lunch(
 
 const PORT = process.env.PORT || 5000;
 
-const server = restify.createServer();
+async function main() {
+  try {
+    await database.connect();
 
-server.post("/lunch", lunch);
+    const server = restify.createServer();
 
-server.listen(PORT, function () {
-  console.log("%s listening at %s", server.name, server.url);
-});
+    server.post("/lunch", lunch);
+
+    server.listen(PORT, function () {
+      console.log("%s listening at %s", server.name, server.url);
+    });
+  } catch (err) {
+    logger.error(err);
+  }
+}
+
+main();

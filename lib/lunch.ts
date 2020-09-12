@@ -37,7 +37,7 @@ async function addReminder(
   return slackWebClient.reminders.add({
     text: message,
     time: date
-  });
+  }) as Promise<AddReminderResponse>;
 }
 
 async function deleteReminder(slackWebClient: WebClient, id: string) {
@@ -145,18 +145,19 @@ async function beginLunch() {
     finishLunchEpoch
   );
 
-  await Promise.all([
+  const resumeWorkReminderPromise = addReminder(
+    slackWebClient,
+    resumeWorkReminderMessage,
+    resumeWorkReminderEpoch
+  );
+
+  const [resumeWorkReminderResponse] = await Promise.all([
+    resumeWorkReminderPromise,
     sendMessagePromise,
     setStatusPromise,
     setDoNotDisturbPromise,
     scheduleMessagePromise
   ]);
-
-  const resumeWorkReminderResponse = (await addReminder(
-    slackWebClient,
-    resumeWorkReminderMessage,
-    resumeWorkReminderEpoch
-  )) as AddReminderResponse;
 
   const resumeWorkReminderId = resumeWorkReminderResponse.reminder.id;
 

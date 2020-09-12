@@ -14,7 +14,7 @@ async function getExpiredReminders(currentDate: Date) {
 
   const collection = database.collection("lunchReminders");
 
-  const cursor = await collection.find({
+  const cursor = collection.find({
     deleted: false,
     remindDate: { $lt: currentDate }
   });
@@ -37,7 +37,7 @@ async function getLunchByStartDate(currentStartDate: Date) {
 
   const collection = database.collection("lunches");
 
-  const cursor = await collection
+  const cursor = collection
     .find({
       endDate: { $gt: currentStartDate }
     })

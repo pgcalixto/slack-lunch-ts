@@ -161,11 +161,33 @@ async function beginLunch() {
 
   const resumeWorkReminderId = resumeWorkReminderResponse.reminder.id;
 
-  await database.saveLunchReminder(
+  await database.saveLunchReminder({
     lunchId,
-    resumeWorkReminderId,
-    resumeWorkReminderDate
+    reminderId: resumeWorkReminderId,
+    remindDate: resumeWorkReminderDate,
+  });
+}
+
+async function deleteAllReminders() {
+  const currentDate = new Date();
+
+  const expiredReminders = await database.getExpiredReminders(currentDate);
+
+  const slackWebClient = new WebClient(token);
+
+  const deletionPromises = expiredReminders.map(async (expiredReminder) => {
+    const { _id: reminderId, reminderId: reminderSlackId } = expiredReminder;
+
+    await deleteReminder(slackWebClient, reminderSlackId);
+
+    return database.setReminderDeletion(reminderId);
+  });
+
+  await Promise.all(deletionPromises);
+
+  console.log(
+    `Deleted reminders ${expiredReminders.map(({ reminderId }) => reminderId)}`
   );
 }
 
-export { beginLunch };
+export { beginLunch, deleteAllReminders };

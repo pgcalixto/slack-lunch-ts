@@ -24,6 +24,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@types/mongodb": "^3.5.27",
     "typescript": "^3.9.6"
   }
 }

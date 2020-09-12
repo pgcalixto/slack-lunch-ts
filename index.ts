@@ -1,7 +1,7 @@
 import * as restify from "restify";
 import * as errs from "restify-errors";
 import { logger } from "./lib/logger";
-import { beginLunch } from "./lib/lunch";
+import { beginLunch, deleteAllReminders } from "./lib/lunch";
 import database from "./lib/database";
 
 async function lunch(
@@ -22,6 +22,24 @@ async function lunch(
   }
 }
 
+async function deleteAll(
+  req: restify.Request,
+  res: restify.Response,
+  next: restify.Next
+) {
+  try {
+    await deleteAllReminders();
+
+    res.send("ok!");
+
+    return next();
+  } catch (err) {
+    logger.error(err);
+
+    return next(new errs.InternalServerError("lunch failed!"));
+  }
+}
+
 const PORT = process.env.PORT || 5000;
 
 async function main() {
@@ -31,6 +49,7 @@ async function main() {
     const server = restify.createServer();
 
     server.post("/lunch", lunch);
+    server.post("/deleteAllReminders", deleteAll);
 
     server.listen(PORT, function () {
       console.log("%s listening at %s", server.name, server.url);
